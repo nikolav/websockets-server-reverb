@@ -5,7 +5,7 @@ docker compose pull
 docker compose up -d
 
 docker ps -a
-docker compose logs -f --tail=122 laravel-reverb
+docker compose logs --tail=122 laravel-reverb
 
 # docker pull 0imbn7v6rkw/websockets-server-reverb && \
 # docker stop laravel-reverb || true && \
