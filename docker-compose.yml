@@ -10,17 +10,18 @@ services:
       RUN_MIGRATIONS: "true"
       CACHE_ARTISAN: "true"
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     depends_on:
-      - postgres
-      - redis
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     restart: unless-stopped
 
   postgres:
     image: postgres:17
     container_name: postgres
-    env_file:
-      - ./.env
+    env_file: ./.env
     environment:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
@@ -30,18 +31,27 @@ services:
     ports:
       - "127.0.0.1:5432:5432"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE} -h 127.0.0.1"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
 
   redis:
     image: redis:7-alpine
     container_name: redis
-    env_file:
-      - ./.env
-    command: redis-server --appendonly yes
+    env_file: ./.env
+    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
     volumes:
       - redisdata:/data
     ports:
       - "127.0.0.1:6379:6379"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      interval: 5s
+      timeout: 2s
+      retries: 20
 
 volumes:
   pgdata:
