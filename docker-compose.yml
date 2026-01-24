@@ -7,8 +7,16 @@ services:
     container_name: laravel-reverb
     env_file: ./.env
     environment:
-      RUN_MIGRATIONS: "true"
-      CACHE_ARTISAN: "true"
+      APP_ENV: production
+      APP_DEBUG: false
+      REDIS_HOST: redis
+      DB_HOST: postgres
+      CACHE_STORE: redis
+      QUEUE_CONNECTION: redis
+      SESSION_DRIVER: redis
+      BROADCAST_CONNECTION: reverb
+      RUN_MIGRATIONS: true
+      CACHE_ARTISAN: true
     ports:
       - "127.0.0.1:8080:8080"
     depends_on:

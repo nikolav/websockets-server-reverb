@@ -12,6 +12,8 @@ class HealthPing implements ShouldBroadcast
 {
     use Dispatchable, SerializesModels;
 
+    public string $broadcastQueue = 'broadcasts';
+
     public function broadcastOn(): array
     {
         return [new Channel('health')];
