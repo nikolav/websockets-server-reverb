@@ -86,4 +86,5 @@ Thumbs.db
 tmp/
 yarn-debug.log*
 yarn-error.log*
+scp-config.sh
 !.env.example
