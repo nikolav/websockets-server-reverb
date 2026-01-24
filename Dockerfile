@@ -4,6 +4,7 @@ RUN set -eux; \
   apk add --no-cache \
     bash curl tzdata \
     supervisor \
+    netcat-openbsd \
     icu-libs oniguruma libzip postgresql-libs; \
   \
   apk add --no-cache --virtual .build-deps \
@@ -19,19 +20,44 @@ RUN set -eux; \
   \
   apk del .build-deps
 
+# required directories
+RUN mkdir -p \
+    /var/log/supervisor \
+    /usr/app \
+    /usr/app/storage \
+    /usr/app/bootstrap/cache
+
+# entrypoint
+COPY docker/entrypoint.sh /entrypoint.sh
+RUN chmod +x /entrypoint.sh
+
 WORKDIR /usr/app
 
-# Copy app (adjust to your build flow)
-COPY . /usr/app
+# install composer deps
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
+COPY composer.json composer.lock ./
+RUN composer install \
+  --no-dev \
+  --no-interaction \
+  --prefer-dist \
+  --optimize-autoloader \
+  --no-scripts \
+  --no-progress
 
-# (Optional) install composer deps during build if you want
-# COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
-# RUN composer install --no-dev --prefer-dist --no-interaction --optimize-autoloader
+# copy app
+COPY . .
 
-# Supervisor config
+# run the scripts now that artisan exists (package discovery, etc.)
+RUN composer run-script post-autoload-dump --no-interaction
+
+# add supervisor config
 COPY docker/supervisord.conf /etc/supervisord.conf
 
-# Reverb listens here (you can change)
+HEALTHCHECK --interval=10s --timeout=2s --retries=3 \
+  CMD nc -z 127.0.0.1 8080 || exit 1
+
+# reverb listens here
 EXPOSE 8080
 
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]
