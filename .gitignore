@@ -1,4 +1,3 @@
-!.env.example
 ._*
 .cache/
 .cypress/
@@ -11,6 +10,8 @@
 .env.local
 .env.production
 .env.testing
+*.env.docker
+!.env.example
 .eslintcache
 .fleet/
 .idea/
@@ -29,7 +30,6 @@
 *.crt
 *.csr
 *.dump
-*.env.docker
 *.key
 *.log
 *.pem
