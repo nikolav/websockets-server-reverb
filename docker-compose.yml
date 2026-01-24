@@ -1,5 +1,6 @@
 services:
   reverb:
+    image: 0imbn7v6rkw/websockets-server-reverb
     build:
       context: .
       dockerfile: Dockerfile
