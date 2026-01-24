@@ -10,6 +10,12 @@ docker run -d \
   --env-file ./.env \
   -e APP_ENV=production \
   -e APP_DEBUG=false \
+  -e REDIS_HOST=redis \
+  -e DB_HOST=postgres \
+  -e CACHE_STORE=redis \
+  -e QUEUE_CONNECTION=redis \
+  -e SESSION_DRIVER=redis \
+  -e BROADCAST_CONNECTION=reverb \
   -e RUN_MIGRATION=true \
   -e CACHE_ARTISAN=true \
   --pull=always \
