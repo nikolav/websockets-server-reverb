@@ -60,6 +60,18 @@ fi
 apt-get install -y --no-install-recommends nginx
 systemctl enable --now nginx
 
+# ---------- Install Node (local testing, wscat) ----------
+# prerequisites
+apt update
+apt install -y curl ca-certificates
+# nvm
+curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+source ~/.bashrc
+nvm install --lts
+nvm use --lts
+# wscat (sanity checks ws)
+npm i -g wscat
+
 # ---------- Firewall ----------
 # reset any existing rules so reruns are deterministic
 ufw --force reset
@@ -79,3 +91,4 @@ echo "Docker: $(docker --version)"
 echo "Docker Compose: $(docker compose version)"
 echo "Nginx: $(nginx -v 2>&1)"
 echo "UFW: $(ufw status | head -n 1)"
+echo "Node/npm: $(node -v) $(npm -v)"
