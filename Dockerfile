@@ -2,9 +2,8 @@ FROM php:8.3-cli-alpine
 
 RUN set -eux; \
   apk add --no-cache \
-    bash curl tzdata coreutils \
+    bash curl tzdata coreutils netcat-openbsd \
     supervisor \
-    netcat-openbsd \
     icu-libs oniguruma libzip postgresql-libs; \
   \
   apk add --no-cache --virtual .build-deps \
