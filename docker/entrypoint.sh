@@ -24,13 +24,13 @@ fi
 # Run migrations only when explicitly enabled
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
     echo "Running migrations..."
-    su -s /bin/sh -c "php artisan migrate --force" www
+    php artisan migrate --force
 fi
 
 # Cache config/routes (optional, but useful in production)
 if [ "${CACHE_ARTISAN:-true}" = "true" ]; then
-    su -s /bin/sh -c "php artisan config:cache || true" www
-    su -s /bin/sh -c "php artisan route:cache || true" www
+    php artisan config:cache || true
+    php artisan route:cache || true
 fi
 
 exec "$@"

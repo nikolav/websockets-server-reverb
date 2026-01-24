@@ -40,15 +40,14 @@ services:
   redis:
     image: redis:7-alpine
     container_name: redis
-    env_file: ./.env
-    command: ["redis-server", "--appendonly", "yes", "--requirepass", "${REDIS_PASSWORD}"]
+    command: ["redis-server", "--appendonly", "yes"]
     volumes:
       - redisdata:/data
     ports:
       - "127.0.0.1:6379:6379"
     restart: unless-stopped
     healthcheck:
-      test: ["CMD-SHELL", "redis-cli ping | grep -q PONG"]
+      test: ["CMD", "redis-cli", "ping"]
       interval: 5s
       timeout: 2s
       retries: 20
