@@ -92,6 +92,10 @@ ufw allow 'Nginx Full'
 # enable firewall
 ufw --force enable
 
+# ---------- misc. settings ----------
+sysctl -w vm.overcommit_memory=1
+echo "vm.overcommit_memory=1" >> /etc/sysctl.conf
+
 # ---------- Debug ----------
 echo -e "\n=== Setup complete ==="
 echo "Git: $(git --version)"
