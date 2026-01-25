@@ -22,7 +22,12 @@ if [ ! -s /var/lib/postgresql/data/PG_VERSION ]; then
   chown -R postgres:postgres /var/lib/postgresql
 
   # initdb
-  gosu postgres /usr/bin/initdb -D /var/lib/postgresql/data --encoding=UTF8 --locale=C
+  gosu postgres /usr/bin/initdb \
+    -D /var/lib/postgresql/data \
+    --auth-local=trust \
+    --auth-host=scram-sha-256 \
+    --encoding=UTF8 \
+    --locale=C
 
   # start temporary postgres to create user/db
   gosu postgres /usr/bin/postgres -D /var/lib/postgresql/data -k /tmp &
