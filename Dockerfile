@@ -30,7 +30,8 @@ RUN mkdir -p \
     /var/log/supervisor \
     /usr/app \
     /usr/app/storage \
-    /usr/app/bootstrap/cache
+    /usr/app/bootstrap/cache \
+    /run
 
 # entrypoint scrypt
 COPY docker/entrypoint.sh /entrypoint.sh
