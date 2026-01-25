@@ -60,6 +60,14 @@ fi
 apt-get install -y --no-install-recommends nginx
 systemctl enable --now nginx
 
+# autoload @/etc/nginx/conf.d/*.conf
+tee /etc/nginx/conf.d/00-connection-upgrade.conf > /dev/null <<'EOF'
+map $http_upgrade $connection_upgrade {
+  default upgrade;
+  '' close;
+}
+EOF
+
 # ---------- Install Node (local testing, wscat) ----------
 # prerequisites
 apt update
