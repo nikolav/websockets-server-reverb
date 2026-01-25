@@ -68,17 +68,17 @@ map $http_upgrade $connection_upgrade {
 }
 EOF
 
-# ---------- Install Node (local testing, wscat) ----------
-# prerequisites
-apt update
-apt install -y curl ca-certificates
-# nvm
-curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
-source ~/.bashrc
-nvm install --lts
-nvm use --lts
-# wscat (sanity checks ws)
-npm i -g wscat
+# # ---------- Install Node (local testing, wscat) ----------
+# # prerequisites
+# apt update
+# apt install -y curl ca-certificates
+# # nvm
+# curl -fsSL https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+# source ~/.bashrc
+# nvm install --lts
+# nvm use --lts
+# # wscat (sanity checks ws)
+# npm i -g wscat
 
 # ---------- Firewall ----------
 # reset any existing rules so reruns are deterministic
