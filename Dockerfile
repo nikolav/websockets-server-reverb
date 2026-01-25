@@ -4,6 +4,12 @@ RUN set -eux; \
   apk add --no-cache \
     bash curl tzdata coreutils netcat-openbsd \
     supervisor \
+    gosu \
+    # redis server
+    redis \
+    # postgres server + client
+    postgresql \
+    postgresql-contrib \
     icu-libs oniguruma libzip postgresql-libs; \
   \
   apk add --no-cache --virtual .build-deps \
@@ -52,11 +58,14 @@ RUN composer run-script post-autoload-dump --no-interaction
 # add supervisor config
 COPY docker/supervisord.conf /etc/supervisord.conf
 
-HEALTHCHECK --interval=10s --timeout=2s --retries=3 \
-  CMD nc -z 127.0.0.1 8080 || exit 1
+HEALTHCHECK --interval=10s --timeout=2s --retries=6 \
+  CMD nc -z 127.0.0.1 8080 && nc -z 127.0.0.1 6379 && nc -z 127.0.0.1 5432 || exit 1
+
+# Volumes for stateful services
+VOLUME ["/var/lib/postgresql/data", "/data"]
 
 # reverb listens here
-EXPOSE 8080
+EXPOSE 8080 5432 6379
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["/usr/bin/supervisord", "-c", "/etc/supervisord.conf"]

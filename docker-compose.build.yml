@@ -1,16 +1,22 @@
 services:
   reverb:
-    image: 0imbn7v6rkw/websockets-server-reverb:latest
+    #>               docker compose -f docker-compose.build.yml build --pull reverb
+    #rebuild:clean>  docker compose -f docker-compose.build.yml build --pull --no-cache reverb
+    #push>           docker compose -f docker-compose.build.yml push reverb
+    image: 0imbn7v6rkw/websockets-server-reverb:1.0.0
     build:
       context: .
       dockerfile: Dockerfile
+
     env_file: ./.env
     environment:
+
       APP_ENV: production
       APP_DEBUG: "false"
 
-      REDIS_HOST: redis
-      DB_HOST: postgres
+      # single-container wiring
+      DB_HOST: 127.0.0.1
+      REDIS_HOST: 127.0.0.1
 
       CACHE_STORE: redis
       QUEUE_CONNECTION: redis
@@ -20,47 +26,16 @@ services:
       RUN_MIGRATIONS: "true"
       CACHE_ARTISAN: "true"
 
-    # expose ws locally on host
     ports:
       - "127.0.0.1:8080:8080"
 
-    # depends_on:
-    #   postgres:
-    #     condition: service_healthy
-    #   redis:
-    #     condition: service_healthy
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - redisdata:/data
 
     restart: unless-stopped
     stop_grace_period: 60s
 
-  # postgres:
-  #   image: postgres:17
-  #   env_file: ./.env
-  #   environment:
-  #     POSTGRES_DB: ${DB_DATABASE}
-  #     POSTGRES_USER: ${DB_USERNAME}
-  #     POSTGRES_PASSWORD: ${DB_PASSWORD}
-  #   volumes:
-  #     - pgdata:/var/lib/postgresql/data
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-  #     interval: 5s
-  #     timeout: 3s
-  #     retries: 20
-
-  # redis:
-  #   image: redis:7-alpine
-  #   command: ["redis-server", "--appendonly", "yes", "/usr/local/etc/redis/redis.conf"]
-  #   volumes:
-  #     - redisdata:/data
-  #   restart: unless-stopped
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "ping"]
-  #     interval: 5s
-  #     timeout: 2s
-  #     retries: 20
-
-# volumes:
-#   pgdata:
-#   redisdata:
+volumes:
+  pgdata:
+  redisdata:
