@@ -2,7 +2,7 @@ FROM php:8.3-cli-alpine
 
 RUN set -eux; \
   apk add --no-cache \
-    bash curl tzdata coreutils netcat-openbsd \
+    bash curl tzdata coreutils netcat-openbsd iproute2 \
     supervisor \
     gosu \
     # redis server
@@ -58,11 +58,16 @@ RUN composer run-script post-autoload-dump --no-interaction
 # add supervisor config
 COPY docker/supervisord.conf /etc/supervisord.conf
 
-HEALTHCHECK --interval=10s --timeout=2s --retries=6 \
-  CMD nc -z 127.0.0.1 8080 && nc -z 127.0.0.1 6379 && nc -z 127.0.0.1 5432 || exit 1
-
 # Volumes for stateful services
 VOLUME ["/var/lib/postgresql/data", "/data"]
+
+# ✅ postgres + redis + migrations + cache done
+# ✅ reverb socket is accepting connections
+HEALTHCHECK --interval=10s --timeout=2s --start-period=30s --retries=3 \
+  CMD \
+    test -f /tmp/bootstrapped \
+    && nc -z 127.0.0.1 8080 \
+    || exit 1
 
 # reverb listens here
 EXPOSE 8080 5432 6379
