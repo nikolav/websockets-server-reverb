@@ -3,16 +3,27 @@ set -euo pipefail
 
 cd /usr/app
 
+# drop stale marker at boot if restart
+rm -f /tmp/bootstrapped
+
+# export laravel variables
+if [ -f /usr/app/.env ]; then
+  set -a
+    . /usr/app/.env
+  set +a
+fi
+
 # warn missing APP_KEY
 if [ -z "${APP_KEY:-}" ]; then
     echo "WARNING: APP_KEY is not set. Set it in .env or compose env."
 fi
 
-# drop stale marker at boot if restart
-rm -f /tmp/bootstrapped
-
 # --- redis doesn't need init ---
 # --- postgres init (only if empty) ---
+pg_escape_sql_literal() {
+  # escape single quotes for SQL string literals: ' -> ''
+  printf "%s" "$1" | sed "s/'/''/g"
+}
 if [ ! -s /var/lib/postgresql/data/PG_VERSION ]; then
   echo "Initializing Postgres data dir..."
   mkdir -p /var/lib/postgresql/data
@@ -34,10 +45,20 @@ if [ ! -s /var/lib/postgresql/data/PG_VERSION ]; then
   PG_PID=$!
 
   # wait for pg
+  ready=0
   for i in {1..60}; do
-    gosu postgres /usr/bin/pg_isready -h /tmp >/dev/null 2>&1 && break
+    if gosu postgres /usr/bin/pg_isready -h /tmp >/dev/null 2>&1; then
+      ready=1
+      break
+    fi
     sleep 1
   done
+
+  if [ "$ready" -ne 1 ]; then
+    echo "Postgres did not become ready in time"
+    kill "$PG_PID" || true
+    exit 1
+  fi
 
   # prefer laravel-style db_* env vars as the source of truth
   : "${DB_DATABASE:=app}"
@@ -49,11 +70,16 @@ if [ ! -s /var/lib/postgresql/data/PG_VERSION ]; then
   : "${POSTGRES_USER:=$DB_USERNAME}"
   : "${POSTGRES_PASSWORD:=$DB_PASSWORD}"
 
+  # validate identifiers (avoid SQL breakage)
+  case "$POSTGRES_USER" in (*[!a-zA-Z0-9_]*|'') echo "Invalid POSTGRES_USER: $POSTGRES_USER"; exit 1;; esac
+  case "$POSTGRES_DB" in (*[!a-zA-Z0-9_]*|'') echo "Invalid POSTGRES_DB: $POSTGRES_DB"; exit 1;; esac
+
+  POSTGRES_PASSWORD_ESCAPED="$(pg_escape_sql_literal "$POSTGRES_PASSWORD")"
   gosu postgres psql -h /tmp -v ON_ERROR_STOP=1 --username postgres <<SQL
 DO \$\$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
-    CREATE ROLE ${POSTGRES_USER} LOGIN PASSWORD '${POSTGRES_PASSWORD}';
+    CREATE ROLE ${POSTGRES_USER} LOGIN PASSWORD '${POSTGRES_PASSWORD_ESCAPED}';
   END IF;
 
   IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '${POSTGRES_DB}') THEN
@@ -63,7 +89,7 @@ END
 \$\$;
 SQL
 
-  kill "$PG_PID"
+  gosu postgres /usr/bin/pg_ctl -D /var/lib/postgresql/data -m fast -w stop
   wait "$PG_PID" || true
 fi
 
