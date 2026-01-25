@@ -32,9 +32,17 @@ RUN mkdir -p \
     /usr/app/storage \
     /usr/app/bootstrap/cache
 
-# entrypoint
+# entrypoint scrypt
 COPY docker/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
+
+# supervisor.bootstrap scrypt
+COPY docker/bootstrap.sh /usr/local/bin/bootstrap.sh
+RUN chmod +x /usr/local/bin/bootstrap.sh
+
+# postgres:start scrypt
+COPY docker/postgres-start.sh /usr/local/bin/postgres-start.sh
+RUN chmod +x /usr/local/bin/postgres-start.sh
 
 WORKDIR /usr/app
 
