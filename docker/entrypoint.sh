@@ -75,18 +75,23 @@ if [ ! -s /var/lib/postgresql/data/PG_VERSION ]; then
   case "$POSTGRES_DB" in (*[!a-zA-Z0-9_]*|'') echo "Invalid POSTGRES_DB: $POSTGRES_DB"; exit 1;; esac
 
   POSTGRES_PASSWORD_ESCAPED="$(pg_escape_sql_literal "$POSTGRES_PASSWORD")"
+
+  # create role (safe to do in DO)
   gosu postgres psql -h /tmp -v ON_ERROR_STOP=1 --username postgres <<SQL
 DO \$\$
 BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
     CREATE ROLE ${POSTGRES_USER} LOGIN PASSWORD '${POSTGRES_PASSWORD_ESCAPED}';
   END IF;
-
-  IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '${POSTGRES_DB}') THEN
-    CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};
-  END IF;
 END
 \$\$;
+SQL
+
+  # create database (MUST be top-level, not inside DO)
+  gosu postgres psql -h /tmp -v ON_ERROR_STOP=1 --username postgres <<SQL
+SELECT 'CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER}'
+WHERE NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = '${POSTGRES_DB}')
+\\gexec
 SQL
 
   gosu postgres /usr/bin/pg_ctl -D /var/lib/postgresql/data -m fast -w stop
