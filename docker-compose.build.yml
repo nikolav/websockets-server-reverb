@@ -17,6 +17,15 @@ services:
       # single-container wiring
       DB_HOST: 127.0.0.1
       REDIS_HOST: 127.0.0.1
+      DB_PORT: 5432
+
+      DB_DATABASE: app
+      DB_USERNAME: app
+      DB_PASSWORD: app
+
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
 
       CACHE_STORE: redis
       QUEUE_CONNECTION: redis

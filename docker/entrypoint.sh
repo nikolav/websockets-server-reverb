@@ -39,10 +39,15 @@ if [ ! -s /var/lib/postgresql/data/PG_VERSION ]; then
     sleep 1
   done
 
+  # prefer laravel-style db_* env vars as the source of truth
+  : "${DB_DATABASE:=app}"
+  : "${DB_USERNAME:=app}"
+  : "${DB_PASSWORD:=app}"
+
   # create user/db (use env vars)
-  : "${POSTGRES_DB:=app}"
-  : "${POSTGRES_USER:=app}"
-  : "${POSTGRES_PASSWORD:=secret}"
+  : "${POSTGRES_DB:=$DB_DATABASE}"
+  : "${POSTGRES_USER:=$DB_USERNAME}"
+  : "${POSTGRES_PASSWORD:=$DB_PASSWORD}"
 
   gosu postgres psql -h /tmp -v ON_ERROR_STOP=1 --username postgres <<SQL
 DO \$\$
@@ -50,9 +55,12 @@ BEGIN
   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
     CREATE ROLE ${POSTGRES_USER} LOGIN PASSWORD '${POSTGRES_PASSWORD}';
   END IF;
+
+  IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '${POSTGRES_DB}') THEN
+    CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};
+  END IF;
 END
 \$\$;
-CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};
 SQL
 
   kill "$PG_PID"
