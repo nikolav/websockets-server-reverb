@@ -25,7 +25,7 @@ docker run -d \
   --restart unless-stopped \
   "$IMAGE"
 
-docker logs --tail=122 "$NAME"
+# docker logs --tail=122 "$NAME"
 
 ## runtime debug checklist
 # docker exec -it laravel-reverb ps aux
