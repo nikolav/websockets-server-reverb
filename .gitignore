@@ -87,5 +87,8 @@ tmp/
 yarn-debug.log*
 yarn-error.log*
 scp-config.sh
+
+temp.*
+
 !.env.example
 !docker-compose.build.yml
