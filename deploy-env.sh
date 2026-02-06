@@ -72,8 +72,7 @@ EOF
 tee /etc/nginx/conf.d/01-origin-allowed.conf > /dev/null <<'EOF'
 map $http_origin $origin_allowed {
   default 0;
-  "https://front1.com" 1;
-  "https://front2.com" 1;
+  "https://nikolav.rs" 1;
 
   # allow no origin (curl, internal services)
   "" 1;
