@@ -72,7 +72,6 @@ EOF
 tee /etc/nginx/conf.d/01-origin-allowed.conf > /dev/null <<'EOF'
 map $http_origin $origin_allowed {
   default 0;
-  "https://nikolav.rs" 1;
   "http://localhost:3000" 1;
 
   # allow no origin (curl, internal services)
