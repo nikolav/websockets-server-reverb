@@ -20,6 +20,7 @@ fi
 
 if [ "${DOCKER_BUILD_NO_CACHE:-true}" = "true" ]; then
   php artisan config:clear || true
+  php artisan cache:clear || true
   php artisan route:clear || true
   php artisan optimize:clear || true
 fi
