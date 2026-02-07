@@ -28,6 +28,10 @@ docker rm -f "$NAME" >/dev/null 2>&1 || true \
 
 # docker logs --tail=122 "$NAME"
 
+# docker rm -f laravel-reverb
+# docker system prune --all --volumes --force
+# docker volume rm pgdata redisdata
+
 ## runtime debug checklist
 # docker exec -it laravel-reverb ps aux
 # docker exec -it laravel-reverb ss -ltnp | egrep "8080|5432|6379"
