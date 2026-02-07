@@ -292,4 +292,28 @@ php artisan config:cache && php artisan route:cache
 
 ---
 
-Happy shipping 🚢✨
+## quick check laravel uses redis for queues
+### config sees redis
+`
+docker exec -it laravel-reverb sh -lc 'php artisan tinker --execute="
+dump(config(\"queue.default\"));
+dump(config(\"cache.default\"));
+"'
+`
+
+### worker is running and targets redis
+`
+docker exec -it laravel-reverb 
+ sh -lc 'ps aux | grep -v grep | egrep "queue:work redis"'
+`
+
+### dispatch a real job and see done
+`
+docker exec -it laravel-reverb 
+  sh -lc 'php artisan tinker --execute='
+    \App\Jobs\QueueJobsSanityCheck::dispatch()->onQueue("default");
+  '
+
+docker logs --tail=50 laravel-reverb | egrep "QueueJobsSanityCheck|RUNNING|DONE"
+`
+
