@@ -18,13 +18,14 @@ if [ "$ok" -ne 1 ]; then
   exit 1
 fi
 
-if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
-  php /usr/app/artisan migrate --force || true
+if [ "${DOCKER_BUILD_NO_CACHE:-true}" = "true" ]; then
+  php artisan config:clear || true
+  php artisan route:clear || true
+  php artisan optimize:clear || true
 fi
 
-if [ "${CACHE_ARTISAN:-true}" = "true" ]; then
-  php /usr/app/artisan config:cache || true
-  php /usr/app/artisan route:cache || true
+if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
+  php /usr/app/artisan migrate --force || true
 fi
 
 touch /tmp/bootstrapped

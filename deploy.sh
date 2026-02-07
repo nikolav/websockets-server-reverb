@@ -17,8 +17,8 @@ docker rm -f "$NAME" >/dev/null 2>&1 || true \
   -e QUEUE_CONNECTION=redis \
   -e SESSION_DRIVER=redis \
   -e BROADCAST_CONNECTION=reverb \
+  -e DOCKER_BUILD_NO_CACHE="true" \
   -e RUN_MIGRATIONS="true" \
-  -e CACHE_ARTISAN="true" \
   -v pgdata:/var/lib/postgresql/data \
   -v redisdata:/data \
   --pull=always \
