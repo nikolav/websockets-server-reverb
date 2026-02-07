@@ -13,12 +13,11 @@ services:
     environment:
 
       APP_ENV: production
-      APP_DEBUG: "false"
+      APP_DEBUG: "true"
 
       # single-container wiring
       DB_HOST: 127.0.0.1
       REDIS_HOST: 127.0.0.1
-      DB_PORT: 5432
 
       CACHE_STORE: redis
       QUEUE_CONNECTION: redis
