@@ -4,7 +4,8 @@ set -euo pipefail
 IMAGE="0imbn7v6rkw/websockets-server-reverb:1.0.0"
 NAME="laravel-reverb"
 
-docker run -d \
+docker rm -f "$NAME" >/dev/null 2>&1 || true \
+&& docker run -d \
   --name "$NAME" \
   -p 127.0.0.1:8080:8080 \
   --env-file ./.env \
