@@ -318,3 +318,10 @@ docker exec -it laravel-reverb
 `# or fallow tail at 2nd terminal
 docker logs -f laravel-reverb
 `
+
+### sanity check broadcasts localy, 'npm i -g wscat'
+$ wscat -c "wss://REVERB.APP.ONLINE/app/KEY?protocol=7&client=js&version=8.4.0&flash=false"
+  > {"event": "pusher:subscribe", "data": {"channel": "health"}}
+$ php artisan tinker
+  > event(new \App\Events\HealthPing()); # should emit
+
