@@ -10,7 +10,7 @@ docker rm -f "$NAME" >/dev/null 2>&1 || true \
   -p 127.0.0.1:8080:8080 \
   --env-file ./.env \
   -e APP_ENV=production \
-  -e APP_DEBUG="false" \
+  -e APP_DEBUG="true" \
   -e REDIS_HOST=127.0.0.1 \
   -e DB_HOST=127.0.0.1 \
   -e CACHE_STORE=redis \
@@ -18,7 +18,7 @@ docker rm -f "$NAME" >/dev/null 2>&1 || true \
   -e SESSION_DRIVER=redis \
   -e BROADCAST_CONNECTION=reverb \
   -e RUN_MIGRATIONS="true" \
-  -e CACHE_ARTISAN="true" \
+  -e CACHE_ARTISAN="false" \
   -v pgdata:/var/lib/postgresql/data \
   -v redisdata:/data \
   --pull=always \
