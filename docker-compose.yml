@@ -1,7 +1,7 @@
 services:
   reverb:
-    #>             docker compose build reverb
-    #>             docker compose build --pull reverb
+    #build>        docker compose build reverb
+    #build:fresh>  docker compose build --pull reverb
     #build:clean>  docker compose build --pull --no-cache reverb
     #push>         docker compose push reverb
     image: 0imbn7v6rkw/websockets-server-reverb:1.0.0
