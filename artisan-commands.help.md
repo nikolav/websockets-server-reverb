@@ -308,6 +308,7 @@ docker exec -it laravel-reverb
 `
 
 ### dispatch a real job and see done
+`docker logs -f laravel-reverb # tail:fallow in 2nd terminal`
 `
 docker exec -it laravel-reverb 
   sh -lc 'php artisan tinker --execute='
@@ -316,4 +317,3 @@ docker exec -it laravel-reverb
 
 docker logs --tail=50 laravel-reverb | egrep "QueueJobsSanityCheck|RUNNING|DONE"
 `
-
