@@ -25,7 +25,7 @@ services:
       BROADCAST_CONNECTION: reverb
 
       RUN_MIGRATIONS: "true"
-      DOCKER_BUILD_NO_CACHE: "true"
+      CLEAR_CACHES_ON_BOOT: "true"
 
     ports:
       - "127.0.0.1:8080:8080"

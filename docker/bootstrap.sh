@@ -18,7 +18,7 @@ if [ "$ok" -ne 1 ]; then
   exit 1
 fi
 
-if [ "${DOCKER_BUILD_NO_CACHE:-true}" = "true" ]; then
+if [ "${CLEAR_CACHES_ON_BOOT:-true}" = "true" ]; then
   php artisan config:clear || true
   php artisan cache:clear || true
   php artisan route:clear || true
