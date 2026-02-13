@@ -22,7 +22,6 @@ if [ "${CLEAR_CACHES_ON_BOOT:-true}" = "true" ]; then
   php artisan config:clear || true
   php artisan cache:clear || true
   php artisan route:clear || true
-  php artisan optimize:clear || true
 fi
 
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
