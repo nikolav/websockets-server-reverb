@@ -26,7 +26,12 @@ if [ "${DOCKER_BUILD_NO_CACHE:-true}" = "true" ]; then
 fi
 
 if [ "${RUN_MIGRATIONS:-false}" = "true" ]; then
-  php /usr/app/artisan migrate --force || true
+  # generate migration table:cache if it doesn't exist
+  if ! ls database/migrations/*_create_cache_table.php >/dev/null 2>&1; then
+    php artisan cache:table
+  fi
+
+  php artisan migrate --force || true
 fi
 
 touch /tmp/bootstrapped
