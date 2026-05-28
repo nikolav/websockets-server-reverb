@@ -82,7 +82,7 @@ sudo ln -sf /snap/bin/certbot /usr/bin/certbot
 ### 3. Issue certificate
 
 ```bash
-sudo certbot --nginx -d reverb.your-domain.com
+sudo certbot --nginx -d reverb-domain.com -d www.reverb-domain.com
 ```
 
 Certbot will:
