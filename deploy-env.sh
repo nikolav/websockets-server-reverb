@@ -13,7 +13,7 @@ fi
 
 # ---------- Update packages ----------
 apt-get update
-apt-get upgrade -y
+# apt-get upgrade -y
 
 
 # ---------- Base deps ----------
