@@ -102,13 +102,14 @@ echo "✅ Reverb Basic Auth configured successfully."
 # reset any existing rules so reruns are deterministic
 ufw --force reset
 # default deny everything incoming; allow all outgoing
-ufw default deny incoming
-ufw default allow outgoing
+# ufw default deny incoming
+# ufw default allow outgoing
 # allow ssh/http(s)
 ufw allow OpenSSH
 ufw allow 'Nginx Full'
 # enable firewall
 ufw --force enable
+ufw reload
 
 
 # ---------- misc. settings ----------
