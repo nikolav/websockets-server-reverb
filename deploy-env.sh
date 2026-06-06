@@ -61,41 +61,41 @@ apt-get install -y --no-install-recommends nginx
 systemctl enable --now nginx
 
 
-# ---------- Setup Reverb Htpasswd ----------
-ENV_FILE=".env"
-HTPASSWD_FILE="/etc/nginx/.reverb_htpasswd"
+# ---------- Setup Reverb Htpasswd for auth_basic ----------
+# ENV_FILE=".env"
+# HTPASSWD_FILE="/etc/nginx/.reverb_htpasswd"
 
-echo "🔎 Reading credentials from ${ENV_FILE}..."
+# echo "🔎 Reading credentials from ${ENV_FILE}..."
 
-if [ ! -f "$ENV_FILE" ]; then
-  echo "❌ .env file not found"
-  exit 1
-fi
+# if [ ! -f "$ENV_FILE" ]; then
+#   echo "❌ .env file not found"
+#   exit 1
+# fi
 
-REVERB_USER=$(grep -E '^REVERB_AUTH_BASE_USER=' "$ENV_FILE" | cut -d '=' -f2- | tr -d '"' | tr -d "'")
-REVERB_PASS=$(grep -E '^REVERB_AUTH_BASE_PASSWORD=' "$ENV_FILE" | cut -d '=' -f2- | tr -d '"' | tr -d "'")
+# REVERB_USER=$(grep -E '^REVERB_AUTH_BASE_USER=' "$ENV_FILE" | cut -d '=' -f2- | tr -d '"' | tr -d "'")
+# REVERB_PASS=$(grep -E '^REVERB_AUTH_BASE_PASSWORD=' "$ENV_FILE" | cut -d '=' -f2- | tr -d '"' | tr -d "'")
 
-if [ -z "${REVERB_USER:-}" ] || [ -z "${REVERB_PASS:-}" ]; then
-  echo "❌ Missing REVERB_AUTH_BASE_USER or REVERB_AUTH_BASE_PASSWORD in .env"
-  exit 1
-fi
+# if [ -z "${REVERB_USER:-}" ] || [ -z "${REVERB_PASS:-}" ]; then
+#   echo "❌ Missing REVERB_AUTH_BASE_USER or REVERB_AUTH_BASE_PASSWORD in .env"
+#   exit 1
+# fi
 
-echo "👤 User: $REVERB_USER"
-echo "🔐 Generating bcrypt htpasswd file..."
+# echo "👤 User: $REVERB_USER"
+# echo "🔐 Generating bcrypt htpasswd file..."
 
-# apache2-utils
-if ! command -v htpasswd >/dev/null 2>&1; then
-  echo "📦 Installing apache2-utils..."
-  apt install -y apache2-utils
-fi
+# # apache2-utils
+# if ! command -v htpasswd >/dev/null 2>&1; then
+#   echo "📦 Installing apache2-utils..."
+#   apt install -y apache2-utils
+# fi
 
-# create/update htpasswd file
-htpasswd -bBc "$HTPASSWD_FILE" "$REVERB_USER" "$REVERB_PASS"
+# # create/update htpasswd file
+# htpasswd -bBc "$HTPASSWD_FILE" "$REVERB_USER" "$REVERB_PASS"
 
-echo "🔒 Setting secure permissions..."
-chmod 640 "$HTPASSWD_FILE"
+# echo "🔒 Setting secure permissions..."
+# chmod 640 "$HTPASSWD_FILE"
 
-echo "✅ Reverb Basic Auth configured successfully."
+# echo "✅ Reverb Basic Auth configured successfully."
 
 
 # ---------- Firewall ----------
